@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react';
 import { Handle, Position, type NodeProps } from '@xyflow/react';
 import { getGoogleWorkspaceClient } from '@/lib/mcp/adapters/googleWorkspaceClient';
+import { useFlowStore } from '@/lib/store/flowStore';
 import type { GoogleDriveNodeData } from '@/types/flow';
 
 export function GoogleDriveNode(props: NodeProps) {
@@ -42,16 +43,25 @@ export function GoogleDriveNode(props: NodeProps) {
     setError(null);
 
     try {
-      // Get Google token from Clerk via API route
-      const tokenResponse = await fetch('/api/auth/google-token');
-      if (!tokenResponse.ok) {
-        const errorData = await tokenResponse.json().catch(() => ({ error: 'Unknown error' }));
-        throw new Error(errorData.error || 'Failed to get Google token. Please ensure you are signed in with Google.');
-      }
-      const { token } = await tokenResponse.json();
+      // Get Google token from store (retrieved when canvas loads)
+      let token = useFlowStore.getState().googleToken;
       
       if (!token) {
-        throw new Error('No Google token available. Please connect your Google account in Clerk.');
+        // Fallback: try to fetch from API if not in store
+        const tokenResponse = await fetch('/api/auth/google-token');
+        if (!tokenResponse.ok) {
+          const errorData = await tokenResponse.json().catch(() => ({ error: 'Unknown error' }));
+          throw new Error(errorData.error || 'Failed to get Google token. Please ensure you are signed in with Google.');
+        }
+        const { token: fetchedToken } = await tokenResponse.json();
+        
+        if (!fetchedToken) {
+          throw new Error('No Google token available. Please connect your Google account in Clerk.');
+        }
+        
+        // Store the token for future use
+        useFlowStore.getState().setGoogleToken(fetchedToken);
+        token = fetchedToken;
       }
       
       const client = await getGoogleWorkspaceClient(token);

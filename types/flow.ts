@@ -147,6 +147,10 @@ export interface FlowStore {
   // Streaming state
   isStreaming: boolean;
   setIsStreaming: (streaming: boolean) => void;
+  
+  // Google OAuth token for MCP
+  googleToken: string | null;
+  setGoogleToken: (token: string | null) => void;
 }
 
 // MCP Types

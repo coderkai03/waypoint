@@ -20,6 +20,8 @@ export async function POST(req: NextRequest) {
       // Store token in a way that agent tools can access it
       // We'll pass it through the store reference or use a global
       (globalThis as any).__googleToken = googleToken;
+    } else {
+      console.warn('[Chat API] Google auth token not available. MCP may not work properly.');
     }
 
     // Set store reference for agent tools

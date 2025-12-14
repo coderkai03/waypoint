@@ -57,5 +57,9 @@ export const useFlowStore = create<FlowStore>((set, get) => ({
   // Streaming state
   isStreaming: false,
   setIsStreaming: (streaming) => set({ isStreaming: streaming }),
+
+  // Google OAuth token for MCP
+  googleToken: null as string | null,
+  setGoogleToken: (token) => set({ googleToken: token }),
 }));
 

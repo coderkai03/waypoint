@@ -1,14 +1,11 @@
 'use client';
 
-import { useState, useEffect } from "react"
+import { useEffect } from "react"
 import { useUser } from "@clerk/nextjs"
 import { useRouter } from "next/navigation"
-import { SignIn } from "@clerk/nextjs"
 import { Button } from "@/components/ui/button"
-import { CompassIcon, X } from "lucide-react"
 
 export default function LandingPage() {
-  const [showAuthModal, setShowAuthModal] = useState(false)
   const { isSignedIn, isLoaded } = useUser()
   const router = useRouter()
 
@@ -19,35 +16,14 @@ export default function LandingPage() {
     }
   }, [isLoaded, isSignedIn, router])
 
-  return (
-    <>
-      <div className="min-h-screen flex flex-col bg-background">
-        {/* Header */}
-        <header className="border-b border-border">
-          <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
-            <div className="flex items-center gap-2 text-xl font-medium text-foreground">
-              <CompassIcon className="w-6 h-6" />
-              <span>Waypoint</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <Button 
-                variant="ghost" 
-                className="text-muted-foreground hover:text-foreground hover:bg-accent cursor-pointer"
-                onClick={() => setShowAuthModal(true)}
-              >
-                Sign in
-              </Button>
-              <Button 
-                className="bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer"
-                onClick={() => setShowAuthModal(true)}
-              >
-                Sign up
-              </Button>
-            </div>
-          </div>
-        </header>
+  const handleGetStarted = () => {
+    // Trigger the auth modal via query parameter
+    router.push('/?signin=true')
+  }
 
-        <main className="flex-1 flex flex-col items-center justify-center px-6 py-20">
+  return (
+    <div className="min-h-screen flex flex-col bg-background">
+      <main className="flex-1 flex flex-col items-center justify-center px-6 py-20">
           <div className="max-w-4xl mx-auto text-center space-y-8">
             {/* Headline */}
             <div className="space-y-4">
@@ -64,7 +40,7 @@ export default function LandingPage() {
               <Button 
                 size="lg" 
                 className="bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-6 text-base cursor-pointer"
-                onClick={() => setShowAuthModal(true)}
+                onClick={handleGetStarted}
               >
                 Get started
               </Button>
@@ -99,55 +75,15 @@ export default function LandingPage() {
               </div>
             </div>
           </div>
-        </main>
+      </main>
 
-        {/* Footer */}
-        <footer className="border-t border-border">
-          <div className="max-w-7xl mx-auto px-6 py-8">
-            <p className="text-sm text-muted-foreground">© Waypoint</p>
-          </div>
-        </footer>
-      </div>
-
-      {/* Auth Modal */}
-      {showAuthModal && (
-        <div 
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
-          onClick={() => setShowAuthModal(false)}
-        >
-          <div 
-            className="relative bg-background border border-border rounded-lg shadow-lg max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              onClick={() => setShowAuthModal(false)}
-              className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
-            <div className="p-6">
-              <SignIn
-                appearance={{
-                  elements: {
-                    rootBox: 'mx-auto',
-                    card: 'shadow-none border-0 bg-transparent',
-                    headerTitle: 'text-foreground',
-                    headerSubtitle: 'text-muted-foreground',
-                    socialButtonsBlockButton: 'border border-border hover:border-foreground',
-                    formButtonPrimary: 'bg-primary text-primary-foreground hover:bg-primary/90',
-                    formFieldInput: 'border-border focus:border-primary',
-                    footerActionLink: 'text-primary hover:text-primary/80',
-                  },
-                }}
-                routing="hash"
-                afterSignInUrl="/canvas"
-                afterSignUpUrl="/canvas"
-              />
-            </div>
-          </div>
+      {/* Footer */}
+      <footer className="border-t border-border">
+        <div className="max-w-7xl mx-auto px-6 py-8">
+          <p className="text-sm text-muted-foreground">© Waypoint</p>
         </div>
-      )}
-    </>
+      </footer>
+    </div>
   )
 }
 
