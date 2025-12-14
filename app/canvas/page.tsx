@@ -11,7 +11,7 @@ export default async function CanvasPage() {
       const { userId } = await auth();
       
       if (!userId) {
-        redirect('/sign-in');
+        redirect('/');
       }
     } catch (error) {
       // If auth check fails, still render (for development)
